@@ -2,19 +2,24 @@
 
 import React, { useState } from 'react';
 import { ALGORITHMS_DATA } from '../../data/algorithms/index';
+import { CubeTheme } from '../../data/themes';
 
-export default function AlgsLibrary() {
+interface AlgsLibraryProps {
+  theme: CubeTheme;
+}
+
+export default function AlgsLibrary({ theme }: AlgsLibraryProps) {
   const [activeTab, setActiveTab] = useState<'F2L' | 'OLL' | 'PLL'>('F2L');
 
   const filteredAlgs = ALGORITHMS_DATA.filter(alg => alg.type === activeTab);
 
   return (
-    <div className="w-full space-y-6 font-mono animate-fade-in text-zinc-200">
+    <div className={`w-full space-y-6 font-mono animate-fade-in transition-all duration-500`}>
       
-      {/* Header del Módulo Ultra Minimalista */}
-      <div className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-2xl">
-        <h2 className="text-xl font-bold tracking-tight text-zinc-100">Biblioteca de Algoritmos</h2>
-        <p className="text-xs text-zinc-500 mt-1 font-sans">Consultá los casos de F2L, OLL y PLL para tu entrenamiento.</p>
+      {/* Header del Módulo */}
+      <div className={`p-5 rounded-2xl border transition-all duration-300 ${theme.card}`}>
+        <h2 className="text-xl font-bold tracking-tight">Biblioteca de Algoritmos</h2>
+        <p className="text-xs opacity-70 mt-1 font-sans">Consultá los casos de F2L, OLL y PLL para tu entrenamiento.</p>
       </div>
 
       {/* Selector de Pestañas (F2L, OLL, PLL) */}
@@ -23,10 +28,10 @@ export default function AlgsLibrary() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 text-xs font-bold rounded-xl border transition-all ${
+            className={`flex-1 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
               activeTab === tab 
-                ? 'bg-zinc-900 border-zinc-850 text-zinc-150 shadow-md' 
-                : 'bg-transparent border-transparent text-zinc-500 hover:text-zinc-400'
+                ? `${theme.accent} shadow-md` 
+                : 'bg-transparent border-transparent opacity-60 hover:opacity-90 text-inherit'
             }`}
           >
             {tab}
@@ -39,35 +44,35 @@ export default function AlgsLibrary() {
         {filteredAlgs.map(alg => (
           <div 
             key={alg.id} 
-            className="p-5 rounded-2xl border bg-zinc-900/30 border-zinc-800/80 hover:border-zinc-700/60 transition-all flex flex-col gap-4"
+            className={`p-5 rounded-2xl border transition-all flex flex-col gap-4 ${theme.card}`}
           >
             <div className="space-y-3 flex-1 w-full">
               {/* Encabezado del caso */}
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase font-bold bg-zinc-800 border border-zinc-700 px-2 py-0.5 rounded text-zinc-400">
+                <span className="text-[10px] uppercase font-bold bg-black/10 border border-current/25 px-2 py-0.5 rounded opacity-80">
                   {alg.group}
                 </span>
-                <h3 className="text-base font-black text-zinc-200">{alg.name}</h3>
+                <h3 className="text-base font-black">{alg.name}</h3>
               </div>
               
-              {/* Lista de Algoritmos con el RETURN explícito arreglado */}
+              {/* Lista de Algoritmos */}
               <div className="space-y-2">
                 {alg.algorithms && alg.algorithms.map((algoText, index) => {
                   return (
                     <div 
                       key={index} 
                       onClick={() => navigator.clipboard.writeText(algoText)}
-                      className="bg-zinc-950/80 border border-zinc-850 p-3 rounded-xl select-all cursor-pointer group relative flex justify-between items-center hover:border-zinc-750 transition-colors"
+                      className={`p-3 rounded-xl select-all cursor-pointer group relative flex justify-between items-center transition-all ${theme.algoBg}`}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-zinc-600 font-bold bg-zinc-900 px-1.5 py-0.5 rounded border border-zinc-800">
+                        <span className="text-[10px] opacity-60 font-bold bg-black/5 px-1.5 py-0.5 rounded border border-current/10">
                           Alt {index + 1}
                         </span>
-                        <code className="text-sm font-bold text-yellow-400/90 tracking-wide0">
+                        <code className="text-sm font-bold tracking-wide">
                           {algoText}
                         </code>
                       </div>
-                      <span className="text-[10px] text-zinc-600 font-sans opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] opacity-0 group-hover:opacity-80 transition-opacity font-sans">
                         Clic para copiar
                       </span>
                     </div>
@@ -76,7 +81,7 @@ export default function AlgsLibrary() {
               </div>
               
               {/* Descripción breve */}
-              <p className="text-xs text-zinc-500 font-sans leading-relaxed">{alg.description}</p>
+              <p className="text-xs opacity-75 font-sans leading-relaxed">{alg.description}</p>
             </div>
           </div>
         ))}

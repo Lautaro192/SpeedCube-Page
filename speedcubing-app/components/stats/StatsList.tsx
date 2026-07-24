@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { CubeTheme } from '../../data/themes';
 
 export interface Solve {
   id: string;
@@ -9,12 +10,20 @@ export interface Solve {
   date: string;
 }
 
+export interface Session {
+  id: string;
+  name: string;
+  solves: Solve[];
+}
+
 interface StatsListProps {
   solves: Solve[];
   onClear: () => void;
+  onDeleteSolve: (id: string) => void;
+  theme: CubeTheme;
 }
 
-export default function StatsList({ solves, onClear }: StatsListProps) {
+export default function StatsList({ solves, onClear, onDeleteSolve, theme }: StatsListProps) {
   // Calculamos el promedio rápido si hay tiempos
   const getAverage = () => {
     if (solves.length === 0) return "-";
@@ -30,31 +39,53 @@ export default function StatsList({ solves, onClear }: StatsListProps) {
   };
 
   return (
-    <div className="w-full bg-zinc-900/30 border border-zinc-800/60 rounded-2xl p-5 font-mono">
-      <div className="flex justify-between items-center mb-4 border-b border-zinc-800/80 pb-2">
+    <div className="w-full flex flex-col h-full font-mono">
+      <div className="flex justify-between items-center mb-4 border-b border-current/10 pb-4">
         <div>
-          <h3 className="text-sm uppercase tracking-widest text-zinc-500">Historial</h3>
-          <p className="text-xs text-zinc-400 mt-1">Solves: <span className="text-zinc-200 font-bold">{solves.length}</span> | Avg: <span className="text-green-400 font-bold">{getAverage()}</span></p>
+          <h3 className="text-xs uppercase tracking-[0.2em] opacity-50 font-bold mb-1">Historial</h3>
+          <p className="text-[10px] opacity-75">
+            Solves: <span className="font-bold">{solves.length}</span> | Avg: <span className="text-emerald-400 font-bold">{getAverage()}</span>
+          </p>
         </div>
         {solves.length > 0 && (
-          <button 
-            onClick={onClear}
-            className="text-xs text-red-400/70 hover:text-red-400 transition-colors bg-red-500/10 hover:bg-red-500/20 px-3 py-1 rounded-lg border border-red-500/20"
-          >
-            Limpiar
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => onDeleteSolve(solves[0].id)}
+              className="text-[10px] opacity-70 hover:opacity-100 transition-all bg-black/10 hover:bg-black/20 px-2 py-1.5 rounded-lg border border-current/15 cursor-pointer font-bold"
+              title="Eliminar la resolución más reciente"
+            >
+              Borrar Último
+            </button>
+            <button 
+              onClick={onClear}
+              className="text-[10px] text-red-500/70 hover:text-red-500 transition-colors bg-red-500/10 hover:bg-red-500/20 px-2 py-1.5 rounded-lg border border-red-500/20 cursor-pointer font-bold"
+            >
+              Limpiar Todo
+            </button>
+          </div>
         )}
       </div>
 
-      <div className="max-h-[160px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar no-scrollbar max-h-[60vh] md:max-h-[70vh]">
         {solves.length === 0 ? (
-          <p className="text-xs text-zinc-600 text-center py-4 italic">No hay tiempos registrados todavía.</p>
+          <p className="text-xs opacity-40 text-center py-4 italic">No hay tiempos registrados todavía.</p>
         ) : (
           solves.map((solve, index) => (
-            <div key={solve.id} className="flex justify-between items-center bg-zinc-900/60 border border-zinc-800/40 px-4 py-2 rounded-xl text-sm">
-              <span className="text-zinc-500 text-xs">#{solves.length - index}</span>
-              <span className="font-bold text-zinc-200">{solve.timeFormatted}</span>
-              <span className="text-[10px] text-zinc-600">{solve.date}</span>
+            <div key={solve.id} className="flex justify-between items-center bg-black/5 border border-current/5 px-4 py-2.5 rounded-xl text-sm transition-all hover:bg-black/10">
+              <div className="flex items-center gap-3">
+                <span className="opacity-50 text-xs">#{solves.length - index}</span>
+                <span className="font-bold">{solve.timeFormatted}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] opacity-40">{solve.date}</span>
+                <button 
+                  onClick={() => onDeleteSolve(solve.id)}
+                  className="hover:text-red-500 hover:bg-red-500/10 p-1 rounded-lg transition-all cursor-pointer text-[10px] leading-none opacity-40 hover:opacity-100"
+                  title="Eliminar este tiempo"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           ))
         )}
